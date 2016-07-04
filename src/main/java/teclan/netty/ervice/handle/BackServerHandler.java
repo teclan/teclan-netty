@@ -41,17 +41,10 @@ public class BackServerHandler extends ChannelInboundHandlerAdapter {
 
         resp = Unpooled.copiedBuffer(hello.getBytes());
 
-        // ctx.writeAndFlush(resp);
-        ctx.write(resp);
-        ctx.flush();
+        // ctx.write(resp);
+        // ctx.flush();
+        ctx.writeAndFlush(resp);
 
-        // final ChannelFuture f = ctx.writeAndFlush(resp);
-        // f.addListener(new ChannelFutureListener() {
-        // public void operationComplete(ChannelFuture future) {
-        // assert f == future;
-        // ctx.close();
-        // }
-        // });
     }
 
     @Override
