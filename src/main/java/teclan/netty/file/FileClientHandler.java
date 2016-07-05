@@ -1,7 +1,6 @@
 package teclan.netty.file;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
 
 import org.slf4j.Logger;
@@ -17,20 +16,18 @@ public class FileClientHandler extends ChannelHandlerAdapter {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(FileClientHandler.class);
 
-    private FileOutputStream ofs;
-
     RandomAccessFile randomFile;
 
-    boolean flag = true;
-
-    static String remote = "/home/dev/Test.txt";
+    private ChannelHandlerContext context = null;
 
     String local = "/home/dev/Desktop/Test.txt";
 
     public void channelActive(ChannelHandlerContext ctx) {
 
-        ctx.write(Unpooled.copiedBuffer(remote.getBytes()));
-        ctx.flush();
+        context = ctx;
+
+        // ctx.write(Unpooled.copiedBuffer(remote.getBytes()));
+        // ctx.flush();
     }
 
     @Override
@@ -54,18 +51,10 @@ public class FileClientHandler extends ChannelHandlerAdapter {
             buf.readBytes(bytes);
             buf.release();
 
-            // LOGGER.info("From Server:{}", new String(bytes, "UTF-8"));
-
             randomFile.seek(fileLength);
             randomFile.write(bytes);
             randomFile.close();
 
-            // ofs = new FileOutputStream(file);
-            // byte[] bytes = new byte[buf.readableBytes()];
-            // buf.readBytes(bytes);
-            // buf.release();
-            // ofs.write(bytes);
-            // ofs.close();
         }
         ctx.flush();
 
@@ -79,6 +68,16 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                     + cause.getMessage() + '\n')
                     .addListener(ChannelFutureListener.CLOSE);
         }
+    }
+
+    public void requestFile(String filePath) {
+
+        if (context == null) {
+            LOGGER.error("the connect is not init !!!");
+            return;
+        }
+        context.write(Unpooled.copiedBuffer(filePath.getBytes()));
+        context.flush();
     }
 
 }

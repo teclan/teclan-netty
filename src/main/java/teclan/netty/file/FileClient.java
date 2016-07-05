@@ -17,6 +17,8 @@ public class FileClient {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(FileClient.class);
 
+    private static FileClientHandler handler = new FileClientHandler();
+
     public static void main(String[] args) throws Exception {
         String host = "127.0.0.1";
         int port = 8080;
@@ -31,12 +33,15 @@ public class FileClient {
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
-                    ch.pipeline().addLast(new FileClientHandler());
+                    ch.pipeline().addLast(handler);
                 }
             });
 
             ChannelFuture f = b.connect(host, port).sync();
             LOGGER.info("The Clinet is start!");
+
+            // 请求文件
+            handler.requestFile("/home/dev/db2.sql");
 
             f.channel().closeFuture().sync();
             LOGGER.info("The Clinet is stop!");
