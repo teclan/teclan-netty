@@ -1,14 +1,14 @@
-package teclan.netty.ervice.handle;
+package teclan.netty.timeback;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class BackClientHandler extends ChannelInboundHandlerAdapter {
+public class BackClientHandler extends ChannelHandlerAdapter {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(BackClientHandler.class);
 
