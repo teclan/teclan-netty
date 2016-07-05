@@ -1,4 +1,4 @@
-package teclan.netty.timeback;
+package teclan.netty.tcp.file;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +12,12 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-public class BackClient {
+public class FileClient {
+
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(BackClient.class);
+            .getLogger(FileClient.class);
+
+    private static FileClientHandler handler = new FileClientHandler();
 
     public static void main(String[] args) throws Exception {
         String host = "127.0.0.1";
@@ -30,12 +33,15 @@ public class BackClient {
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 public void initChannel(SocketChannel ch) throws Exception {
-                    ch.pipeline().addLast(new BackClientHandler());
+                    ch.pipeline().addLast(handler);
                 }
             });
 
             ChannelFuture f = b.connect(host, port).sync();
             LOGGER.info("The Clinet is start!");
+
+            // 请求文件
+            handler.requestFile("/home/dev/db2.sql");
 
             f.channel().closeFuture().sync();
             LOGGER.info("The Clinet is stop!");

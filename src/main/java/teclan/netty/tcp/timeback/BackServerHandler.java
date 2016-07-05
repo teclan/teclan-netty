@@ -1,4 +1,4 @@
-package teclan.netty.timeback;
+package teclan.netty.tcp.timeback;
 
 import java.util.Date;
 

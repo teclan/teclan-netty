@@ -1,4 +1,4 @@
-package teclan.netty.file;
+package teclan.netty.tcp.file;
 
 import java.io.File;
 import java.io.RandomAccessFile;
