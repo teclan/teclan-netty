@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,17 +21,23 @@ public class FileClientHandler extends ChannelHandlerAdapter {
 
     RandomAccessFile randomFile;
 
+    boolean flag = true;
+
+    static String remote = "/home/dev/Test.txt";
+
+    String local = "/home/dev/Desktop/Test.txt";
+
     public void channelActive(ChannelHandlerContext ctx) {
 
+        ctx.write(Unpooled.copiedBuffer(remote.getBytes()));
+        ctx.flush();
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg)
             throws Exception {
 
-        String path = "/home/dev/Desktop/m2.zip";
-
-        File file = new File(path);
+        File file = new File(local);
         if (!file.exists()) {
             file.createNewFile();
 
@@ -40,17 +47,18 @@ public class FileClientHandler extends ChannelHandlerAdapter {
 
         if (buf.isReadable()) {
 
-            randomFile = new RandomAccessFile(path, "rw");
+            randomFile = new RandomAccessFile(local, "rw");
             long fileLength = randomFile.length();
 
             byte[] bytes = new byte[buf.readableBytes()];
             buf.readBytes(bytes);
+            buf.release();
+
+            // LOGGER.info("From Server:{}", new String(bytes, "UTF-8"));
 
             randomFile.seek(fileLength);
             randomFile.write(bytes);
             randomFile.close();
-
-            buf.release();
 
             // ofs = new FileOutputStream(file);
             // byte[] bytes = new byte[buf.readableBytes()];

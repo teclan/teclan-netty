@@ -11,12 +11,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.util.CharsetUtil;
 
 public class FileServer {
     private static final Logger LOGGER = LoggerFactory
@@ -35,27 +29,39 @@ public class FileServer {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
 
         try {
-
             ServerBootstrap b = new ServerBootstrap();
+
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG, 100)
-                    .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         public void initChannel(SocketChannel ch)
                                 throws Exception {
-                            ch.pipeline()
-                                    .addLast(new StringEncoder(
-                                            CharsetUtil.UTF_8))
-                                    .addLast(new LineBasedFrameDecoder(
-                                            maxLength))
-                                    .addLast(new StringDecoder(
-                                            CharsetUtil.UTF_8))
-                                    .addLast(new FileServerHandler());
-
+                            ch.pipeline().addLast(new FileServerHandler());
                         }
-                    });
+                    }).option(ChannelOption.SO_BACKLOG, 128)
+                    .childOption(ChannelOption.SO_KEEPALIVE, true);
+
+            // b.group(bossGroup, workerGroup)
+            // .channel(NioServerSocketChannel.class)
+            // .option(ChannelOption.SO_BACKLOG, 100)
+            // .childOption(ChannelOption.SO_KEEPALIVE, true)
+            // .handler(new LoggingHandler(LogLevel.INFO))
+            // .childHandler(new ChannelInitializer<SocketChannel>() {
+            // @Override
+            // public void initChannel(SocketChannel ch)
+            // throws Exception {
+            // ch.pipeline()
+            // .addLast(new StringEncoder(
+            // CharsetUtil.UTF_8))
+            // .addLast(new LineBasedFrameDecoder(
+            // maxLength))
+            // .addLast(new StringDecoder(
+            // CharsetUtil.UTF_8))
+            // .addLast(new FileServerHandler());
+            //
+            // }
+            // });
 
             ChannelFuture f = b.bind(port).sync();
 
