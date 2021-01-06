@@ -9,5 +9,5 @@ public class FileServerTest {
     public void setup() throws InterruptedException {
         FileServer fileServer = new FileServer();
         fileServer.run(7070);
-    }
+    }  
 }

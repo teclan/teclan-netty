@@ -2,7 +2,6 @@ package teclan.netty.model;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import teclan.netty.utils.IdUtils;
 
 public class FileInfo {
     private String id;
@@ -24,6 +23,7 @@ public class FileInfo {
         this.srcFileName=srcFileName;
         this.dstFileName=dstFileName;
         this.length=length;
+        this.tmpFileName = dstFileName+".swap";
     }
 
     public String getSrcFileName() {
@@ -116,8 +116,12 @@ public class FileInfo {
 
     public  String toString(){
         JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(this));
-        jsonObject.remove("data");
-        jsonObject.put("data",String.format("[data,length = %s]",data.length));
+//        jsonObject.remove("data");
+        jsonObject.put("data",String.format("[data,length = %s]",data==null?0:data.length));
         return jsonObject.toString();
+    }
+
+    public byte[] toBytes(){
+        return toString().getBytes();
     }
 }

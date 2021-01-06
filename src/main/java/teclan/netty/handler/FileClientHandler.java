@@ -80,12 +80,20 @@ public class FileClientHandler extends ChannelInboundHandlerAdapter {
                     fileInfo.setData(data);
                     fileInfo.setStart(start);
                     fileInfo.setIndex(index);
+                    fileInfo.setPoint(fileInfo.getPoint()+cacheLength);
                     channelHandlerContext.writeAndFlush(fileInfo);
-                    LOGGER.info("=== {}", fileInfo);
+                    channelHandlerContext.flush();
                     start += cacheLength;
-                    Thread.sleep(500);
+                    Thread.sleep(1000);
                 }
             } while (cacheLength > 0);
+
+            index++;
+            fileInfo.setData(null);
+            fileInfo.setStart(start);
+            fileInfo.setIndex(index);
+            fileInfo.setPoint(file.length());
+            channelHandlerContext.writeAndFlush(fileInfo);
 
         }
 

@@ -12,15 +12,19 @@ public class FileInfoEnCoder extends MessageToByteEncoder<FileInfo> {
 
     protected synchronized void encode(ChannelHandlerContext channelHandlerContext, FileInfo fileInfo, ByteBuf byteBuf) throws Exception {
 
-        byte[] data = fileInfo.getId().getBytes();
+        byte[] data = fileInfo.getId().getBytes("UTF-8");
         byteBuf.writeInt(data.length);
         byteBuf.writeBytes(data);
 
-        data = fileInfo.getSrcFileName().getBytes();
+        data = fileInfo.getSrcFileName().getBytes("UTF-8");
         byteBuf.writeInt(data.length);
         byteBuf.writeBytes(data);
 
-        data = fileInfo.getDstFileName().getBytes();
+        data = fileInfo.getDstFileName().getBytes("UTF-8");
+        byteBuf.writeInt(data.length);
+        byteBuf.writeBytes(data);
+
+        data = fileInfo.getTmpFileName().getBytes("UTF-8");
         byteBuf.writeInt(data.length);
         byteBuf.writeBytes(data);
 
@@ -28,12 +32,21 @@ public class FileInfoEnCoder extends MessageToByteEncoder<FileInfo> {
         byteBuf.writeLong(fileInfo.getStart());
         byteBuf.writeLong(fileInfo.getPoint());
         byteBuf.writeLong(fileInfo.getLength());
-
         byteBuf.writeBoolean(fileInfo.isDone());
         byteBuf.writeBoolean(fileInfo.isDir());
 
-        byteBuf.writeInt(fileInfo.getData().length);
-        byteBuf.writeBytes(fileInfo.getData());
+        if(fileInfo.getData()==null){
+            byteBuf.writeInt(0);
+        }else {
+            byteBuf.writeInt(fileInfo.getData().length);
+            byteBuf.writeBytes(fileInfo.getData());
+        }
+
+
+//        byte[] bytes = fileInfo.toBytes();
+//
+//        byteBuf.writeInt(bytes.length);
+//        byteBuf.writeBytes(bytes);
         LOGGER.info("{}",fileInfo);
     }
 }

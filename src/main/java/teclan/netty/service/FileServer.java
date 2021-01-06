@@ -29,22 +29,22 @@ public class FileServer {
         ServerBootstrap serverBootstrap = new ServerBootstrap ();
         serverBootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
-                .option(ChannelOption.SO_BACKLOG, 1024)
+//                .option(ChannelOption.SO_BACKLOG, 10240)
                 .handler(new LoggingHandler(LogLevel.INFO))
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childHandler(new ChannelInitializer<Channel>() {
                       protected void initChannel(Channel ch) throws Exception {
                         LOGGER.info("客户端接入：{} ==> {}",ch.remoteAddress(),ch.localAddress().toString());
-//                        ch.pipeline().addLast(new ObjectEncoder());
-//                        ch.pipeline().addLast(new FileInfoEnCoder());
-//                        ch.pipeline().addLast(new FileInfoDecoder());
-//                        ch.pipeline().addLast(new FileServerHanlder());
+                        ch.pipeline().addLast(new ObjectEncoder());
+                        ch.pipeline().addLast(new FileInfoEnCoder());
+                        ch.pipeline().addLast(new FileInfoDecoder());
+                        ch.pipeline().addLast(new FileServerHanlder());
 
-                          ch.pipeline().addLast(new StringEncoder(CharsetUtil.UTF_8))
-                                  .addLast(new LineBasedFrameDecoder(8192))
-                                  .addLast(new StringDecoder(CharsetUtil.UTF_8))
-                                  .addLast(new ChunkedWriteHandler())
-                                  .addLast(new FileServerHanlder());
+//                          ch.pipeline().addLast(new StringEncoder(CharsetUtil.UTF_8))
+//                                  .addLast(new LineBasedFrameDecoder(8192))
+//                                  .addLast(new StringDecoder(CharsetUtil.UTF_8))
+//                                  .addLast(new ChunkedWriteHandler())
+//                                  .addLast(new FileServerHanlder());
                     }
                 });
         ChannelFuture f = serverBootstrap.bind(port).sync();//邦定端口并启动
