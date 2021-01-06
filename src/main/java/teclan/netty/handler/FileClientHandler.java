@@ -43,6 +43,10 @@ public class FileClientHandler extends ChannelHandlerAdapter {
         this.channelHandlerContext = ctx;
     }
 
+    public void clsoe(){
+        channelHandlerContext.close();
+    }
+
     public void upload(final String srcDir, final String dstDir, final String fileName) throws Exception {
 
         if (monitor == null) {
@@ -64,7 +68,7 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                     monitor.serProcess(file.getAbsolutePath(), 100, 100);
                 } else {
                     BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()));
-                    byte[] cache = new byte[1024];
+                    byte[] cache = new byte[10240];
                     int cacheLength = 0;
                     long start = 0;
                     int index = 0;
@@ -82,9 +86,8 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                             fileInfo.setIndex(index);
                             fileInfo.setPoint(fileInfo.getPoint() + cacheLength);
                             channelHandlerContext.writeAndFlush(fileInfo);
-                            channelHandlerContext.flush();
-                            monitor.serProcess(file.getAbsolutePath(), fileInfo.getLength(), start);
-                            if(index%100==0){
+                            if(index%1000==0){
+                                monitor.serProcess(file.getAbsolutePath(), fileInfo.getLength(), start);
                             }
 
                             start += cacheLength;

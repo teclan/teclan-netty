@@ -16,6 +16,10 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
 
         byteBuf.markReaderIndex();
 
+        if(byteBuf.toString().equals("EmptyByteBufBE")){
+            return;
+        }
+
         int length = 0;
         FileInfo fileInfo = new FileInfo();
         try {
@@ -76,10 +80,8 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
                 byteBuf.readBytes(data);
                 fileInfo.setData(data);
             }
-            LOGGER.info("{}", fileInfo);
             list.add(fileInfo);
         } catch (Exception e) {
-            LOGGER.info(" fileInfo = {}", fileInfo);
             LOGGER.error(e.getMessage(), e);
         }
     }

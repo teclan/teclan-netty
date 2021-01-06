@@ -11,13 +11,13 @@ public class FileInfoCache {
     private static final LinkedBlockingQueue<FileInfo> FILE_INFO_QUEUE = new LinkedBlockingQueue<FileInfo>();
 
     public static void put(FileInfo fileInfo) throws InterruptedException {
-        LOGGER.info("入队：{}",fileInfo);
+//        LOGGER.info("入队：{}",fileInfo);
         FILE_INFO_QUEUE.put(fileInfo);
     }
 
     public static FileInfo take() throws InterruptedException {
         FileInfo fileInfo =  FILE_INFO_QUEUE.take();
-        LOGGER.info("出队队：{}",fileInfo);
+//        LOGGER.info("出队队：{}",fileInfo);
         return fileInfo;
     }
 

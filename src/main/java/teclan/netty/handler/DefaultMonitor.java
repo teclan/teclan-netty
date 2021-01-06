@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class DefaultMonitor implements Monitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMonitor.class);
-    private static final DecimalFormat DF = new DecimalFormat("#.00");
+    private static final DecimalFormat DF = new DecimalFormat("###.00");
 
     private static Map<String,String> PROCESS = new HashMap<String, String>();
 

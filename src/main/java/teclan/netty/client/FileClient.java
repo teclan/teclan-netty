@@ -74,4 +74,8 @@ public class FileClient {
             LOGGER.error(e.getMessage(), e);
         }
     }
+
+    public void close(){
+        fileClientHandler.clsoe();
+    }
 }

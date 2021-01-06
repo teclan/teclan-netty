@@ -20,13 +20,7 @@ public class FileServer {
 
     private FileServerHanlder fileServerHanlder;
 
-    public FileServer() {
-        fileServerHanlder = new FileServerHanlder();
-    }
 
-    public FileServer(int pollSize) {
-        fileServerHanlder = new FileServerHanlder(pollSize);
-    }
 
     public void run(int port) throws InterruptedException, IOException {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -42,7 +36,7 @@ public class FileServer {
                         ch.pipeline().addLast(new ObjectEncoder());
                         ch.pipeline().addLast(new FileInfoEnCoder());
                         ch.pipeline().addLast(new FileInfoDecoder());
-                        ch.pipeline().addLast(fileServerHanlder);
+                        ch.pipeline().addLast(new FileServerHanlder());
                     }
                 });
         ChannelFuture f = serverBootstrap.bind(port).sync();//邦定端口并启动
