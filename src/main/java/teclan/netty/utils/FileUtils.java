@@ -36,7 +36,7 @@ public class FileUtils {
             LOGGER.warn("检测到目标文件 {} 已经存在，即将在文件名后加入时间戳保存...",dst.getAbsolutePath());
             String fileName = dst.getName();
             String name = fileName.lastIndexOf(".") > 0 ? fileName.substring(0, fileName.lastIndexOf(".")) : fileName;
-            String suffix = fileName.lastIndexOf(".") > 0 ? fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length()) : "";
+            String suffix = fileName.lastIndexOf(".") > 0 ? fileName.substring(fileName.lastIndexOf(".") , fileName.length()) : "";
             fileName = name + "_"+SDF.format(new Date()) + suffix;
             dst = new File(dst.getParentFile().getAbsolutePath() + File.separator + fileName);
         }

@@ -68,7 +68,7 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                     monitor.serProcess(file.getAbsolutePath(), 100, 100);
                 } else {
                     BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()));
-                    byte[] cache = new byte[10240];
+                    byte[] cache = new byte[10240000];
                     int cacheLength = 0;
                     long start = 0;
                     int index = 0;
