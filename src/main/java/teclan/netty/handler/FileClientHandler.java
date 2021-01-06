@@ -2,16 +2,15 @@ package teclan.netty.handler;
 
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import teclan.netty.config.Config;
 import teclan.netty.model.FileInfo;
 import teclan.netty.utils.IdUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -62,13 +61,15 @@ public class FileClientHandler extends ChannelHandlerAdapter {
 
                 FileInfo fileInfo = new FileInfo(file.getAbsolutePath(), dstDir + File.separator + fileName, file.length());
                 fileInfo.setId(IdUtils.get());
+                fileInfo.setType("data");
                 if (file.isDirectory()) {
                     fileInfo.setDir(true);
                     channelHandlerContext.writeAndFlush(fileInfo);
                     monitor.serProcess(file.getAbsolutePath(), 100, 100);
                 } else {
                     BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()));
-                    byte[] cache = new byte[10240000];
+
+                    byte[] cache = new byte[Config.SLICE];
                     int cacheLength = 0;
                     long start = 0;
                     int index = 0;

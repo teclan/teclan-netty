@@ -4,15 +4,13 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.serialization.ClassResolvers;
-import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import teclan.netty.coding.FileInfoDecoder;
-import teclan.netty.coding.FileInfoEnCoder;
+import teclan.netty.coder.FileInfoDecoder;
+import teclan.netty.coder.FileInfoEnCoder;
 import teclan.netty.handler.FileClientHandler;
 
 public class FileClient {

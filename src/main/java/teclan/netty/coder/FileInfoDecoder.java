@@ -1,4 +1,4 @@
-package teclan.netty.coding;
+package teclan.netty.coder;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -6,6 +6,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import teclan.netty.model.FileInfo;
+import teclan.netty.utils.StringUtils;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
         FileInfo fileInfo = new FileInfo();
         try {
 
+            // 文件ID解码
             length = byteBuf.readInt();
             if (waitCache(length,byteBuf)) {
                 byteBuf.resetReaderIndex();
@@ -31,8 +33,8 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
             }
             byte[] data = new byte[length];
             byteBuf.readBytes(data);
-            fileInfo.setId(new String(data,"UTF-8"));
-
+            fileInfo.setId(StringUtils.getString(data));
+            // 源文件路径解码
             length = byteBuf.readInt();
             if (waitCache(length,byteBuf)) {
                 byteBuf.resetReaderIndex();
@@ -40,8 +42,8 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
             }
             data = new byte[length];
             byteBuf.readBytes(data);
-            fileInfo.setSrcFileName(new String(data,"UTF-8"));
-
+            fileInfo.setSrcFileName(StringUtils.getString(data));
+            // 目标文件路径解码
             length = byteBuf.readInt();
             if (waitCache(length,byteBuf)) {
                 byteBuf.resetReaderIndex();
@@ -49,8 +51,8 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
             }
             data = new byte[length];
             byteBuf.readBytes(data);
-            fileInfo.setDstFileName(new String(data,"UTF-8"));
-
+            fileInfo.setDstFileName(StringUtils.getString(data));
+            // 临时文件路径解码
             length = byteBuf.readInt();
             if (waitCache(length,byteBuf)) {
                 byteBuf.resetReaderIndex();
@@ -58,17 +60,35 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
             }
             data = new byte[length];
             byteBuf.readBytes(data);
-            fileInfo.setTmpFileName(new String(data,"UTF-8"));
+            fileInfo.setTmpFileName(StringUtils.getString(data));
 
+            // 类型解码
+            length = byteBuf.readInt();
+            if (waitCache(length,byteBuf)) {
+                byteBuf.resetReaderIndex();
+                return;
+            }
+            data = new byte[length];
+            byteBuf.readBytes(data);
+            fileInfo.setType(StringUtils.getString(data));
+
+            // 分片大小解码
+            fileInfo.setSlice(byteBuf.readInt());
+            // 索引解码
             fileInfo.setIndex(byteBuf.readInt());
+            // 读取位置解码
             fileInfo.setStart(byteBuf.readLong());
+            // 读取结束位置解码
             fileInfo.setPoint(byteBuf.readLong());
+            // 文件长度解码
             fileInfo.setLength(byteBuf.readLong());
+            // 是否完成标志解码
             fileInfo.setDone(byteBuf.readBoolean());
+            // 是否目录解码
             fileInfo.setDir(byteBuf.readBoolean());
 
+            // 数据包解码
             length = byteBuf.readInt();
-
             if (length == 0) {
                 fileInfo.setData(null);
             } else {

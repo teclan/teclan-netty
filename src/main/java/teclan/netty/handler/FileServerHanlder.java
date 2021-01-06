@@ -17,8 +17,11 @@ public class FileServerHanlder extends ChannelHandlerAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileServerHanlder.class);
     private static int poolSize = 10;
     private static ExecutorService EXCUTORS = null;
+    private ChannelHandlerContext channelHandlerContext;
 
-
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        channelHandlerContext = ctx;
+    }
 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         LOGGER.error(cause.getMessage(), cause);
@@ -76,6 +79,7 @@ public class FileServerHanlder extends ChannelHandlerAdapter {
                             dst.getParentFile().mkdirs();
                             try {
                                 FileUtils.rename(tmp,dst);
+                                LOGGER.info("文件接收完成 {}",dst.getAbsolutePath());
                             } catch (Exception e) {
                                 LOGGER.error(e.getMessage(), e);
                             }
