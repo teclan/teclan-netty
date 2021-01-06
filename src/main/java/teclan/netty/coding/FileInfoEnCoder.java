@@ -41,12 +41,5 @@ public class FileInfoEnCoder extends MessageToByteEncoder<FileInfo> {
             byteBuf.writeInt(fileInfo.getData().length);
             byteBuf.writeBytes(fileInfo.getData());
         }
-
-
-//        byte[] bytes = fileInfo.toBytes();
-//
-//        byteBuf.writeInt(bytes.length);
-//        byteBuf.writeBytes(bytes);
-        LOGGER.info("{}",fileInfo);
     }
 }

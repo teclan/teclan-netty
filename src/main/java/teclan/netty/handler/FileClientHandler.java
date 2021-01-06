@@ -15,7 +15,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class FileClientHandler extends ChannelInboundHandlerAdapter {
+public class FileClientHandler extends ChannelHandlerAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileClientHandler.class);
     private ChannelHandlerContext channelHandlerContext;
     private static ExecutorService EXCUTORS = Executors.newFixedThreadPool(5);
@@ -49,58 +49,62 @@ public class FileClientHandler extends ChannelInboundHandlerAdapter {
             monitor = new DefaultMonitor();
         }
 
-//        EXCUTORS.submit(new Callable<Boolean>(){
-//            public Boolean call() throws Exception {
-        File file = new File(srcDir + File.separator + fileName);
-        if (!file.exists()) {
-            throw new Exception(String.format("检测到文件不存在，不允许上传，%s", file.getAbsolutePath()));
-        }
+     //   EXCUTORS.submit(new Callable<Boolean>() {
+       //     public Boolean call() throws Exception {
+                File file = new File(srcDir + File.separator + fileName);
+                if (!file.exists()) {
+                    throw new Exception(String.format("检测到文件不存在，不允许上传，%s", file.getAbsolutePath()));
+                }
 
-        FileInfo fileInfo = new FileInfo(file.getAbsolutePath(), dstDir + File.separator + fileName, file.length());
-        fileInfo.setId(IdUtils.get());
-        if (file.isDirectory()) {
-            fileInfo.setDir(true);
-            channelHandlerContext.writeAndFlush(fileInfo);
-            monitor.serProcess(file.getAbsolutePath(), 100, 100);
-        } else {
-            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()));
-            byte[] cache = new byte[1024];
-            int cacheLength = 0;
-            long start = 0;
-            int index = 0;
-            do {
-                index++;
-                cacheLength = bis.read(cache);
+                FileInfo fileInfo = new FileInfo(file.getAbsolutePath(), dstDir + File.separator + fileName, file.length());
+                fileInfo.setId(IdUtils.get());
+                if (file.isDirectory()) {
+                    fileInfo.setDir(true);
+                    channelHandlerContext.writeAndFlush(fileInfo);
+                    monitor.serProcess(file.getAbsolutePath(), 100, 100);
+                } else {
+                    BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()));
+                    byte[] cache = new byte[1024];
+                    int cacheLength = 0;
+                    long start = 0;
+                    int index = 0;
+                    do {
+                        index++;
+                        cacheLength = bis.read(cache);
 
-                if(cacheLength==-1){
+                        if (cacheLength == -1) {
 
-                }else {
-                    byte[] data = new byte[cacheLength];
-                    System.arraycopy(cache, 0, data, 0, cacheLength);
-                    fileInfo.setData(data);
+                        } else {
+                            byte[] data = new byte[cacheLength];
+                            System.arraycopy(cache, 0, data, 0, cacheLength);
+                            fileInfo.setData(data);
+                            fileInfo.setStart(start);
+                            fileInfo.setIndex(index);
+                            fileInfo.setPoint(fileInfo.getPoint() + cacheLength);
+                            channelHandlerContext.writeAndFlush(fileInfo);
+                            channelHandlerContext.flush();
+                            monitor.serProcess(file.getAbsolutePath(), fileInfo.getLength(), start);
+                            if(index%100==0){
+                            }
+
+                            start += cacheLength;
+                            Thread.sleep(10);
+                        }
+                    } while (cacheLength > 0);
+
+                    index++;
+                    fileInfo.setData(null);
                     fileInfo.setStart(start);
                     fileInfo.setIndex(index);
-                    fileInfo.setPoint(fileInfo.getPoint()+cacheLength);
+                    fileInfo.setPoint(file.length());
+                    fileInfo.setDone(true);
                     channelHandlerContext.writeAndFlush(fileInfo);
-                    channelHandlerContext.flush();
-                    start += cacheLength;
-                    Thread.sleep(1000);
+                    monitor.serProcess(file.getAbsolutePath(), 100, 100);
+
                 }
-            } while (cacheLength > 0);
-
-            index++;
-            fileInfo.setData(null);
-            fileInfo.setStart(start);
-            fileInfo.setIndex(index);
-            fileInfo.setPoint(file.length());
-            channelHandlerContext.writeAndFlush(fileInfo);
-
-        }
-
-
-//                return true;
-//            }
-//        });
+            //    return true;
+          //  }
+      //  });
 
 
     }

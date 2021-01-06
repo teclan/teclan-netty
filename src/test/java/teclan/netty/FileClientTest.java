@@ -21,7 +21,8 @@ public class FileClientTest {
 
     @Test
     public void upload() throws Exception {
-        fileClient.upload("E:\\Apps","E:\\remote","ideaIU-2019.3.exe");
+//        fileClient.upload("E:\\Apps","E:\\remote","ideaIU-2019.3.exe");
+        fileClient.upload("E:\\Apps","E:\\remote","INSTALL.txt");
     }
 
 }

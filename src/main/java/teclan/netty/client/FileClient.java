@@ -68,6 +68,10 @@ public class FileClient {
     }
 
     public void upload(String srcDir,String dstDir,String fileName) throws Exception {
-        fileClientHandler.upload(srcDir,dstDir,fileName);
+        try {
+            fileClientHandler.upload(srcDir,dstDir,fileName);
+        }catch (InterruptedException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
     }
 }

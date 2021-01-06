@@ -45,7 +45,7 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
             }
             data = new byte[length];
             byteBuf.readBytes(data);
-            fileInfo.setTmpFileName(new String(data,"UTF-8"));
+            fileInfo.setDstFileName(new String(data,"UTF-8"));
 
             length = byteBuf.readInt();
             if (waitCache(length,byteBuf)) {
@@ -54,7 +54,7 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
             }
             data = new byte[length];
             byteBuf.readBytes(data);
-            fileInfo.setDstFileName(new String(data,"UTF-8"));
+            fileInfo.setTmpFileName(new String(data,"UTF-8"));
 
             fileInfo.setIndex(byteBuf.readInt());
             fileInfo.setStart(byteBuf.readLong());
@@ -88,10 +88,8 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
 
         int count = byteBuf.readableBytes();
         if (byteBuf.readableBytes() < length) {
-            LOGGER.info("缓冲区可读数据小于期望,可读长度：{}，期望：{}", count, length);
+            LOGGER.debug("缓冲区可读数据小于期望,可读长度：{}，期望：{}", count, length);
             return true;
-        }else {
-            LOGGER.info("缓冲区可读,可读长度：{}，期望：{}", count, length);
         }
         return false;
     }
