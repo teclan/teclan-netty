@@ -26,6 +26,7 @@ public class FileServerHanlder extends ChannelHandlerAdapter {
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        LOGGER.error("客户端 {} ==> 服务端 {}",ctx.channel().remoteAddress(),ctx.channel().localAddress());
         LOGGER.error(cause.getMessage(), cause);
     }
 
@@ -52,6 +53,12 @@ public class FileServerHanlder extends ChannelHandlerAdapter {
                 while (true) {
                     try {
                         final FileInfo fileInfo = FileInfoCache.take();
+
+                        if(!CounterCache.hasCache(fileInfo)){
+                            FileInfoCache.put(fileInfo);
+                            continue;
+                        }
+
                         byte[] data = fileInfo.getData();
                         if (fileInfo.isDir()) {
                             new File(fileInfo.getDstFileName()).mkdirs();

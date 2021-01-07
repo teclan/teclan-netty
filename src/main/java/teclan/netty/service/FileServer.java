@@ -22,7 +22,7 @@ public class FileServer {
 
 
 
-    public void run(int port) throws InterruptedException, IOException {
+    public void run(int port)  {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         ServerBootstrap serverBootstrap = new ServerBootstrap();
@@ -39,9 +39,14 @@ public class FileServer {
                         ch.pipeline().addLast(new FileServerHanlder());
                     }
                 });
-        ChannelFuture f = serverBootstrap.bind(port).sync();//邦定端口并启动
-        LOGGER.info("文件服务器已经启动，端口号：{}", port);
-        fileServerHanlder.run();
-        f.channel().closeFuture().sync();
+
+        try {
+            ChannelFuture f = serverBootstrap.bind(port).sync();//邦定端口并启动
+            LOGGER.info("文件服务器已经启动，端口号：{}", port);
+            fileServerHanlder.run();
+            f.channel().closeFuture().sync();
+        }catch (Exception e){
+            LOGGER.error(e.getMessage(),e);
+        }
     }
 }

@@ -91,7 +91,9 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                         if (cacheLength == -1) {
 
                         } else {
-                            byte[] data = new byte[cacheLength];
+
+                            byte[] data = null;
+                            data = new byte[cacheLength];
                             System.arraycopy(cache, 0, data, 0, cacheLength);
                             fileInfo.setData(data);
                             fileInfo.setStart(start);
@@ -99,7 +101,7 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                             fileInfo.setPoint(fileInfo.getPoint() + cacheLength);
                             channelHandlerContext.writeAndFlush(fileInfo);
                             if (index % 100 == 0) {
-                                monitor.serProcess(file.getAbsolutePath(), fileInfo.getLength(), start);
+                                monitor.serProcess(file.getAbsolutePath(), fileInfo.getPackages(), fileInfo.getIndex());
                             }
 
                             start += cacheLength;
