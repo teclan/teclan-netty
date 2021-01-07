@@ -62,26 +62,19 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
             byteBuf.readBytes(data);
             fileInfo.setTmpFileName(StringUtils.getString(data));
 
-            // 类型解码
-            length = byteBuf.readInt();
-            if (waitCache(length,byteBuf)) {
-                byteBuf.resetReaderIndex();
-                return;
-            }
-            data = new byte[length];
-            byteBuf.readBytes(data);
-            fileInfo.setType(StringUtils.getString(data));
-
             // 分片大小解码
             fileInfo.setSlice(byteBuf.readInt());
+            // 文件长度解码
+            fileInfo.setLength(byteBuf.readLong());
+            // 数据包个数解码
+            fileInfo.setPackages(byteBuf.readInt());
             // 索引解码
             fileInfo.setIndex(byteBuf.readInt());
             // 读取位置解码
             fileInfo.setStart(byteBuf.readLong());
             // 读取结束位置解码
             fileInfo.setPoint(byteBuf.readLong());
-            // 文件长度解码
-            fileInfo.setLength(byteBuf.readLong());
+
             // 是否完成标志解码
             fileInfo.setDone(byteBuf.readBoolean());
             // 是否目录解码

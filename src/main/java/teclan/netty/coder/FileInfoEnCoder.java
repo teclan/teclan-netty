@@ -33,21 +33,18 @@ public class FileInfoEnCoder extends MessageToByteEncoder<FileInfo> {
         byteBuf.writeInt(data.length);
         byteBuf.writeBytes(data);
 
-        // 类型编码
-        data = StringUtils.getBytes(fileInfo.getType());
-        byteBuf.writeInt(data.length);
-        byteBuf.writeBytes(data);
-
         //分片大小编码
         byteBuf.writeInt(fileInfo.getSlice());
-        // 所以编码
+        // 文件长度编码
+        byteBuf.writeLong(fileInfo.getLength());
+        // 数据包个数编码
+        byteBuf.writeInt(fileInfo.getPackages());
+        // 索引编码
         byteBuf.writeInt(fileInfo.getIndex());
         // 读取位置编码
         byteBuf.writeLong(fileInfo.getStart());
         // 读取结算位置编码
         byteBuf.writeLong(fileInfo.getPoint());
-        // 文件长度编码
-        byteBuf.writeLong(fileInfo.getLength());
         // 是否结束编码
         byteBuf.writeBoolean(fileInfo.isDone());
         // 是否目录编码

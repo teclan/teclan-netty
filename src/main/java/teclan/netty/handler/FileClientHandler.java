@@ -11,17 +11,20 @@ import teclan.netty.utils.IdUtils;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class FileClientHandler extends ChannelHandlerAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileClientHandler.class);
     private ChannelHandlerContext channelHandlerContext;
-    private static ExecutorService EXCUTORS = Executors.newFixedThreadPool(5);
+    private static ExecutorService EXCUTORS = Executors.newFixedThreadPool(1);
     private Monitor monitor;
+    private ParamFetcher paramFetcher;
 
     public FileClientHandler() {
         monitor = new DefaultMonitor();
+        paramFetcher = new DefaultParamFetcher();
     }
 
     public FileClientHandler(Monitor monitor) {
@@ -42,7 +45,7 @@ public class FileClientHandler extends ChannelHandlerAdapter {
         this.channelHandlerContext = ctx;
     }
 
-    public void clsoe(){
+    public void clsoe() {
         channelHandlerContext.close();
     }
 
@@ -52,8 +55,8 @@ public class FileClientHandler extends ChannelHandlerAdapter {
             monitor = new DefaultMonitor();
         }
 
-     //   EXCUTORS.submit(new Callable<Boolean>() {
-       //     public Boolean call() throws Exception {
+        EXCUTORS.submit(new Callable<Boolean>() {
+            public Boolean call() throws Exception {
                 File file = new File(srcDir + File.separator + fileName);
                 if (!file.exists()) {
                     throw new Exception(String.format("检测到文件不存在，不允许上传，%s", file.getAbsolutePath()));
@@ -61,7 +64,7 @@ public class FileClientHandler extends ChannelHandlerAdapter {
 
                 FileInfo fileInfo = new FileInfo(file.getAbsolutePath(), dstDir + File.separator + fileName, file.length());
                 fileInfo.setId(IdUtils.get());
-                fileInfo.setType("data");
+                fileInfo.setDefTmpFileName();
                 if (file.isDirectory()) {
                     fileInfo.setDir(true);
                     channelHandlerContext.writeAndFlush(fileInfo);
@@ -69,7 +72,15 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                 } else {
                     BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()));
 
-                    byte[] cache = new byte[Config.SLICE];
+                    int slice = paramFetcher.get().getInteger("slice");
+
+                    if(file.length()<slice){
+                        slice = (int)file.length();
+                    }
+                    fileInfo.setSlice(slice);
+                    fileInfo.setPackages((int)Math.ceil(file.length()*1.0/slice));
+
+                    byte[] cache = new byte[slice];
                     int cacheLength = 0;
                     long start = 0;
                     int index = 0;
@@ -87,7 +98,7 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                             fileInfo.setIndex(index);
                             fileInfo.setPoint(fileInfo.getPoint() + cacheLength);
                             channelHandlerContext.writeAndFlush(fileInfo);
-                            if(index%1000==0){
+                            if (index % 100 == 0) {
                                 monitor.serProcess(file.getAbsolutePath(), fileInfo.getLength(), start);
                             }
 
@@ -95,20 +106,12 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                             Thread.sleep(10);
                         }
                     } while (cacheLength > 0);
-
-                    index++;
-                    fileInfo.setData(null);
-                    fileInfo.setStart(start);
-                    fileInfo.setIndex(index);
-                    fileInfo.setPoint(file.length());
-                    fileInfo.setDone(true);
-                    channelHandlerContext.writeAndFlush(fileInfo);
                     monitor.serProcess(file.getAbsolutePath(), 100, 100);
-
+                    LOGGER.info("文件传输完成：{}", file.getAbsolutePath());
                 }
-            //    return true;
-          //  }
-      //  });
+                return true;
+            }
+        });
 
 
     }

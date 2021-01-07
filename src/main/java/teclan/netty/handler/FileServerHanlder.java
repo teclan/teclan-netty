@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import teclan.netty.cache.CounterCache;
 import teclan.netty.cache.FileInfoCache;
 import teclan.netty.model.FileInfo;
 import teclan.netty.utils.FileUtils;
@@ -20,6 +21,7 @@ public class FileServerHanlder extends ChannelHandlerAdapter {
     private ChannelHandlerContext channelHandlerContext;
 
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        ctx.fireChannelRegistered();
         channelHandlerContext = ctx;
     }
 
@@ -32,6 +34,7 @@ public class FileServerHanlder extends ChannelHandlerAdapter {
             return;
         } else {
             FileInfo fileInfo = (FileInfo) msg;
+            CounterCache.increase(fileInfo);
             FileInfoCache.put(fileInfo);
         }
 
@@ -44,7 +47,6 @@ public class FileServerHanlder extends ChannelHandlerAdapter {
         }
         LOGGER.info("处理文件信息任务已启动，线程池大小：{}", poolSize);
 
-
         new Thread(new Runnable() {
             public void run() {
                 while (true) {
@@ -53,36 +55,31 @@ public class FileServerHanlder extends ChannelHandlerAdapter {
                         byte[] data = fileInfo.getData();
                         if (fileInfo.isDir()) {
                             new File(fileInfo.getDstFileName()).mkdirs();
+                            CounterCache.remove(fileInfo);
+                            LOGGER.info("文件接收完成 {}",fileInfo.getDstFileName());
                             continue;
                         }
 
                         File tmp = new File(fileInfo.getTmpFileName());
-                        if (fileInfo.isDone()) {
-                            File dst = new File(fileInfo.getDstFileName());
-                            dst.getParentFile().mkdirs();
-                            try {
-                                FileUtils.rename(tmp,dst);
-                            } catch (Exception e) {
-                                LOGGER.error(e.getMessage(), e);
-                            }
-                            continue;
-                        }
-
                         int dataLength = data.length;
                         if (dataLength > 0) {
                             RandomAccessFile randomAccessFile = new RandomAccessFile(tmp, "rw");
                             randomAccessFile.seek(fileInfo.getStart());
                             randomAccessFile.write(data);
                             randomAccessFile.close();
-                        } else {
+                        }
+
+                        if (CounterCache.isDone(fileInfo)) {
                             File dst = new File(fileInfo.getDstFileName());
                             dst.getParentFile().mkdirs();
                             try {
                                 FileUtils.rename(tmp,dst);
-                                LOGGER.info("文件接收完成 {}",dst.getAbsolutePath());
                             } catch (Exception e) {
                                 LOGGER.error(e.getMessage(), e);
                             }
+                            CounterCache.remove(fileInfo);
+                            LOGGER.info("文件接收完成 {}",dst.getAbsolutePath());
+                            continue;
                         }
 
                     } catch (Exception e) {

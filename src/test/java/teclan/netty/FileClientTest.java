@@ -21,8 +21,13 @@ public class FileClientTest {
 
     @Test
     public void upload() throws Exception {
+        fileClient.upload("E:\\Apps","E:\\remote","ideaIU-2018.3.exe");
         fileClient.upload("E:\\Apps","E:\\remote","ideaIU-2019.3.exe");
-//        fileClient.upload("E:\\Apps","E:\\remote","INSTALL.txt");
+        fileClient.upload("E:\\Apps","E:\\remote","ideaIU-2020.1.zip");
+
+        fileClient.upload("E:\\Apps","E:\\remote","INSTALL.txt");
+
+        Thread.sleep(1000*60*20);
         fileClient.close();
     }
 
