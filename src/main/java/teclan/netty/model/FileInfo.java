@@ -32,7 +32,11 @@ public class FileInfo {
     }
 
     public void setDefTmpFileName(){
-        this.tmpFileName = dstFileName+id;
+        File file = new File(dstFileName);
+        String fileName = file.getName();
+        String name = fileName.lastIndexOf(".")>0?fileName.substring(0,fileName.indexOf(".")):fileName;
+        String suffix = fileName.lastIndexOf(".")>0?fileName.substring(fileName.lastIndexOf(".")):"";
+        this.tmpFileName = file.getParent()+File.separator+name+"_"+id+suffix;
     }
 
     public String getSrcFileName() {
