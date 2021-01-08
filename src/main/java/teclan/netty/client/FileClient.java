@@ -61,7 +61,7 @@ public class FileClient {
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             if(e.getMessage().contains("Connection refused")){
-                throw new Exception("连接服务器 %s:%d 失败，请确认文件服务器已启动，并且主机和端口配置正确!");
+                throw new Exception(String.format("连接服务器 %s:%d 失败，请确认文件服务器已启动，并且主机和端口配置正确!",host,port));
             }else {
                 throw  e;
             }
