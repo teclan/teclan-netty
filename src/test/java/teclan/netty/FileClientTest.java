@@ -10,7 +10,7 @@ public class FileClientTest {
     FileClient fileClient = new FileClient("127.0.0.1",7730);
 
     @Before
-    public void setUp(){
+    public void setUp() throws Exception {
         fileClient.start();
     }
 
