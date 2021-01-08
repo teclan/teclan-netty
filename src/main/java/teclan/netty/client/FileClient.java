@@ -37,7 +37,7 @@ public class FileClient {
         this.port=port;
     }
 
-    public void start() {
+    public void start() throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap bootstrap = new Bootstrap();
@@ -60,6 +60,7 @@ public class FileClient {
             heartbeatStart();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
+            throw  e;
         }
     }
 

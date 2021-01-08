@@ -20,8 +20,6 @@ public class FileServer {
 
     private FileServerHanlder fileServerHanlder;
 
-
-
     public void run(int port)  {
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -44,9 +42,12 @@ public class FileServer {
             ChannelFuture f = serverBootstrap.bind(port).sync();//邦定端口并启动
             LOGGER.info("文件服务器已经启动，端口号：{}", port);
             fileServerHanlder.run();
-            f.channel().closeFuture().sync();
+           // f.channel().closeFuture().sync();
         }catch (Exception e){
             LOGGER.error(e.getMessage(),e);
         }
+    }
+
+    public void stop(){
     }
 }
