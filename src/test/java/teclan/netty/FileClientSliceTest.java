@@ -14,7 +14,7 @@ public class FileClientSliceTest {
 
 
     @Test
-    public void clientStart(){
+    public void clientStart() throws Exception {
         FileClientHandler fileClientHandler = new FileClientHandler();
 
         /**

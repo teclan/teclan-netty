@@ -12,10 +12,6 @@ import org.slf4j.LoggerFactory;
 import teclan.netty.coder.FileInfoDecoder;
 import teclan.netty.coder.FileInfoEnCoder;
 import teclan.netty.handler.FileClientHandler;
-import teclan.netty.model.FileInfo;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class FileClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileClient.class);
@@ -23,7 +19,7 @@ public class FileClient {
     private FileClientHandler fileClientHandler;
     private String host;
     private int port;
-    private Timer timer = new Timer();
+
 
     public FileClient(String host,int port){
         this.fileClientHandler= new FileClientHandler();
@@ -57,7 +53,7 @@ public class FileClient {
                     });
             channelFuture = bootstrap.connect(host, port).sync(); //连接服务端
             LOGGER.info("已连接服务器 {}:{}",host,port);
-            heartbeatStart();
+            fileClientHandler.run();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             if(e.getMessage().contains("Connection refused")){
@@ -75,8 +71,7 @@ public class FileClient {
             LOGGER.error(e.getMessage(), e);
         }
 
-        fileClientHandler.clsoe();
-        timer.cancel();
+        fileClientHandler.stop();
     }
 
     public void upload(String srcDir,String dstDir,String fileName) throws Exception {
@@ -87,21 +82,5 @@ public class FileClient {
         }
     }
 
-    /**
-     * 启动发送心跳数据，数据包为空
-     */
-    public void heartbeatStart(){
-        LOGGER.info("心跳程序已启动 ....");
-        final FileInfo fileInfo = new FileInfo();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                try {
-                    fileClientHandler.send(fileInfo);
-                } catch (Exception e) {
-                    LOGGER.error(e.getMessage(),e);
-                }
-            }
-        },10000,10000);
-    }
+
 }

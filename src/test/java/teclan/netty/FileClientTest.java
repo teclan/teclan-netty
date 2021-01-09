@@ -7,7 +7,7 @@ import teclan.netty.client.FileClient;
 
 public class FileClientTest {
 
-    FileClient fileClient = new FileClient("127.0.0.1",7730);
+    FileClient fileClient = new FileClient("127.0.0.1",7070);
 
     @Before
     public void setUp() throws Exception {
