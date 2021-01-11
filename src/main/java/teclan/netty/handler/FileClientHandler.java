@@ -120,4 +120,8 @@ public class FileClientHandler extends ChannelHandlerAdapter {
             }
         });
     }
+
+    public ChannelHandlerContext getCtx(){
+        return ctx;
+    }
 }
