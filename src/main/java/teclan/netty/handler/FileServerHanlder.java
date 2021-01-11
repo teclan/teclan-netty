@@ -8,6 +8,7 @@ import teclan.netty.cache.CounterCache;
 import teclan.netty.cache.FileInfoCache;
 import teclan.netty.model.FileInfo;
 
+import java.io.File;
 import java.net.SocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,18 +55,29 @@ public class FileServerHanlder extends ChannelHandlerAdapter {
      * @param fileName
      * @throws Exception
      */
-    public void push(final String remote,final String srcDir, final String dstDir, final String fileName) throws Exception {
+    public static void push(final String remote,final String srcDir, final String dstDir, final String fileName) throws Exception {
         final  ChannelHandlerContext ctx = CLINET_INFOS.get(remote);
         if(ctx==null){
             LOGGER.info("文件推送失败，未找到客户端[{}]的连接信息 ... ",remote);
             return;
         }
-        EXCUTORS.submit(new Callable<Boolean>() {
-            public Boolean call() throws Exception {
-                FileInfoHandler.transfer(EXCUTORS,monitor,paramFetcher, ctx,srcDir,dstDir,fileName);
-                return true;
-            }
-        });
+        LOGGER.info("文件推送  ==> {},{} ",remote,dstDir+ File.separator+fileName);
+
+        if(monitor==null){
+            monitor = new DefaultMonitor();
+        }
+
+        if(paramFetcher==null){
+            paramFetcher = new DefaultParamFetcher();
+        }
+
+        FileInfoHandler.transfer(EXCUTORS,monitor,paramFetcher, ctx,srcDir,dstDir,fileName);
+//        EXCUTORS.submit(new Callable<Boolean>() {
+//            public Boolean call() throws Exception {
+//                FileInfoHandler.transfer(EXCUTORS,monitor,paramFetcher, ctx,srcDir,dstDir,fileName);
+//                return true;
+//            }
+//        });
     }
 
     public static void run() {
@@ -94,5 +106,21 @@ public class FileServerHanlder extends ChannelHandlerAdapter {
             }
 
         }).start();
+    }
+
+    public static Monitor getMonitor() {
+        return monitor;
+    }
+
+    public static void setMonitor(Monitor monitor) {
+        FileServerHanlder.monitor = monitor;
+    }
+
+    public static ParamFetcher getParamFetcher() {
+        return paramFetcher;
+    }
+
+    public static void setParamFetcher(ParamFetcher paramFetcher) {
+        FileServerHanlder.paramFetcher = paramFetcher;
     }
 }

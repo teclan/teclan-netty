@@ -64,7 +64,15 @@ public class FileInfoHandler {
         }
     }
 
-    public static void  transfer(final ExecutorService EXCUTORS, final Monitor monitor, final ParamFetcher paramFetcher, final ChannelHandlerContext ctx, final String srcDir, final String dstDir, final String fileName){
+    public static void  transfer(final ExecutorService EXCUTORS, final Monitor monitor, final ParamFetcher paramFetcher, final ChannelHandlerContext ctx, final String srcDir, final String dstDir, final String fileName) throws Exception {
+
+        if(monitor==null){
+            throw new Exception("参数 monitor 未配置...");
+        }
+
+        if(paramFetcher==null){
+            throw new Exception("参数 paramFetcher 未配置...");
+        }
 
         EXCUTORS.submit(new Callable<Boolean>() {
             public Boolean call() throws Exception {

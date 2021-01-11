@@ -47,4 +47,8 @@ public class FileServer {
             LOGGER.error(e.getMessage(),e);
         }
     }
+
+    public static void push(final String remote,final String srcDir, final String dstDir, final String fileName) throws Exception {
+        FileServerHanlder.push(remote, srcDir, dstDir, fileName);
+    }
 }

@@ -103,7 +103,7 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                     LOGGER.error(e.getMessage(),e);
                 }
             }
-        },10000,10000);
+        },10000,1000000);
     }
 
     public void stop() {

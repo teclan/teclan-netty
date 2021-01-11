@@ -5,7 +5,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import teclan.netty.handler.FileServerHanlder;
 import teclan.netty.model.FileInfo;
+import teclan.netty.service.FileServer;
 import teclan.netty.utils.StringUtils;
 
 import java.util.List;
@@ -96,11 +98,13 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
 
             if("".equals(fileInfo.getId())){
                 LOGGER.info("收到心跳包,{}",fileInfo);
+               // FileServer.push(channelHandlerContext.channel().remoteAddress().toString(),"E:\\Apps","E:\\remote","ideaIU-2018.3.exe");
             }else {
                 list.add(fileInfo);
             }
 
         } catch (Exception e) {
+            LOGGER.error("{}",fileInfo);
             LOGGER.error(e.getMessage(), e);
         }
     }
