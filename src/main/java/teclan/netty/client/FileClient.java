@@ -82,5 +82,8 @@ public class FileClient {
         }
     }
 
+    public FileClientHandler getFileClientHandler(){
+        return fileClientHandler;
+    }
 
 }
