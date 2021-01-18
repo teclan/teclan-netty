@@ -93,7 +93,7 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
                 fileInfo.setMd5(FileUtils.getFileSummary(file,"MD5"));
                 fileInfo.setPackageType(PackageType.DATA);
 
-                push(fileInfo);
+                push(getRemote(ctx),fileInfo);
 
                 if (file.isDirectory()) {
                     fileInfo.setDir(true);
@@ -149,6 +149,15 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
             throw new Exception(String.format("检测到连接未初始化成功，发送失败，内容：%s", o));
         }
         ctx.writeAndFlush(o);
+    }
+
+    public void writeFail(FileInfo fileInfo) throws Exception {
+        LOGGER.info("接收文件失败,{}",fileInfo);
+    }
+
+    private String getRemote(ChannelHandlerContext ctx){
+        String remote = ctx.channel().remoteAddress().toString();
+        return remote;
     }
 }
 

@@ -13,7 +13,8 @@ public interface FileInfoHandler {
 
     public void send(ChannelHandlerContext ctx, Object o) throws Exception;
 
-    public void push (FileInfo fileInfo) throws Exception;
+    public void push (String remote,FileInfo fileInfo) throws Exception;
 
     public void writeFail(FileInfo fileInfo) throws Exception;
+
 }
