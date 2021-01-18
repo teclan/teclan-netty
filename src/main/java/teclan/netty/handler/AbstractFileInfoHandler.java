@@ -90,6 +90,9 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
                 fileInfo.setId(IdUtils.get());
                 fileInfo.setDefTmpFileName();
                 fileInfo.setMd5(FileUtils.getFileSummary(file,"MD5"));
+
+                push(fileInfo);
+
                 if (file.isDirectory()) {
                     fileInfo.setDir(true);
                     send(ctx, fileInfo);
