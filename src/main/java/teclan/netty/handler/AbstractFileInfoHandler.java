@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import teclan.netty.cache.CounterCache;
 import teclan.netty.cache.FileInfoCache;
 import teclan.netty.model.FileInfo;
+import teclan.netty.model.PackageType;
 import teclan.netty.utils.FileUtils;
 import teclan.netty.utils.IdUtils;
 
@@ -90,6 +91,7 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
                 fileInfo.setId(IdUtils.get());
                 fileInfo.setDefTmpFileName();
                 fileInfo.setMd5(FileUtils.getFileSummary(file,"MD5"));
+                fileInfo.setPackageType(PackageType.DATA);
 
                 push(fileInfo);
 
