@@ -6,10 +6,12 @@ import com.alibaba.fastjson.JSONObject;
 import java.io.File;
 
 public class FileInfo {
+    private PackageType packageType;
     private String id=""; // 文件ID
     private String srcFileName="";//源文件路径
     private String dstFileName="";//目标文件路径
     private String tmpFileName="";//临时文件路径
+    private String md5=""; // 原文件MD5
     private int index;//包索引，表名是第几个数据包
     private int slice; // 片大小
     private long length = 0L; // 文件长度
@@ -135,6 +137,14 @@ public class FileInfo {
         this.slice = slice;
     }
 
+    public String getMd5() {
+        return md5;
+    }
+
+    public void setMd5(String md5) {
+        this.md5 = md5;
+    }
+
     public  String toString(){
         JSONObject jsonObject = JSON.parseObject(JSON.toJSONString(this));
         jsonObject.put("data",data==null? "[NULL]" :String.format("[二进制,length = %s]",data.length));
@@ -151,5 +161,13 @@ public class FileInfo {
 
     public byte[] toBytes(){
         return toString().getBytes();
+    }
+
+    public PackageType getPackageType() {
+        return packageType;
+    }
+
+    public void setPackageType(PackageType packageType) {
+        this.packageType = packageType;
     }
 }

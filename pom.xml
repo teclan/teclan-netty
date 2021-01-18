@@ -4,7 +4,7 @@
 
     <groupId>teclan-netty</groupId>
     <artifactId>teclan-netty</artifactId>
-    <version>0.1.0-bate</version>
+    <version>0.1.0-stable</version>
     <packaging>jar</packaging>
 
     <name>teclan-netty</name>

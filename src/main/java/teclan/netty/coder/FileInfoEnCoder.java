@@ -16,6 +16,9 @@ public class FileInfoEnCoder extends MessageToByteEncoder<FileInfo> {
 
     protected synchronized void encode(ChannelHandlerContext channelHandlerContext, FileInfo fileInfo, ByteBuf byteBuf) throws Exception {
 
+        // 数据包类型
+        byteBuf.writeInt(fileInfo.getPackageType().getValue());
+
         // 文件ID编码
         byte[] data = StringUtils.getBytes(fileInfo.getId());
         byteBuf.writeInt(data.length);

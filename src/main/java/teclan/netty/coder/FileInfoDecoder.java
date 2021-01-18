@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import teclan.netty.handler.FileServerHanlder;
 import teclan.netty.model.FileInfo;
+import teclan.netty.model.PackageType;
 import teclan.netty.service.FileServer;
 import teclan.netty.utils.StringUtils;
 
@@ -26,6 +27,9 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
         int length = 0;
         FileInfo fileInfo = new FileInfo();
         try {
+
+            PackageType packageType = PackageType.parse(byteBuf.readInt());
+            fileInfo.setPackageType(packageType);
 
             // 文件ID解码
             length = byteBuf.readInt();
@@ -95,14 +99,7 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
                 byteBuf.readBytes(data);
                 fileInfo.setData(data);
             }
-
-            if("".equals(fileInfo.getId())){
-                LOGGER.info("收到心跳包,{}",fileInfo);
-               // FileServer.push(channelHandlerContext.channel().remoteAddress().toString(),"E:\\Apps","E:\\remote","ideaIU-2018.3.exe");
-            }else {
-                list.add(fileInfo);
-            }
-
+            list.add(fileInfo);
         } catch (Exception e) {
             LOGGER.error("{}",fileInfo);
             LOGGER.error(e.getMessage(), e);

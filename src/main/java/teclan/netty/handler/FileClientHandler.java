@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import teclan.netty.cache.CounterCache;
 import teclan.netty.cache.FileInfoCache;
 import teclan.netty.model.FileInfo;
+import teclan.netty.model.PackageType;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,22 +23,24 @@ public class FileClientHandler extends ChannelHandlerAdapter {
     private Thread fileReceiveServer;
     private Monitor monitor;
     private ParamFetcher paramFetcher;
+    private static FileInfoHandler fileInfoHandler;
 
     public FileClientHandler() {
         monitor = new DefaultMonitor();
         paramFetcher = new DefaultParamFetcher();
+        fileInfoHandler = new DefaultFileInfoHandler();
     }
-
     public FileClientHandler(Monitor monitor) {
         this.monitor = monitor;
     }
-
     public void setMonitor(Monitor monitor) {
         this.monitor = monitor;
     }
-
     public void setParamFetcher(ParamFetcher paramFetcher) {
         this.paramFetcher = paramFetcher;
+    }
+    public void setFileInfoHandler(FileInfoHandler fileInfoHandler) {
+        this.fileInfoHandler = fileInfoHandler;
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
@@ -54,8 +57,17 @@ public class FileClientHandler extends ChannelHandlerAdapter {
             return;
         } else {
             FileInfo fileInfo = (FileInfo) msg;
-            CounterCache.increase(fileInfo);
-            FileInfoCache.put(fileInfo);
+
+            if(PackageType.HEARBEAT.compareTo(fileInfo.getPackageType())==0){ // 客户端发送的心跳数据包
+                LOGGER.info("收到心跳包,{}",fileInfo);
+            }else if(PackageType.DATA.compareTo(fileInfo.getPackageType())==0){// 客户端发送的文件数据包
+                CounterCache.increase(fileInfo);
+                FileInfoCache.put(fileInfo);
+            }else if(PackageType.CMD_NEED_REPEAT.compareTo(fileInfo.getPackageType())==0){// 客户端请求重复推送文件,当文件解析异常时发送
+                // TODO
+            }else {
+                LOGGER.info("收到未知的数据包类型,{}",fileInfo);
+            }
         }
     }
 
@@ -77,7 +89,7 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                 while (true) {
                     try {
                         final FileInfo fileInfo = FileInfoCache.take();
-                        FileInfoHandler.write(fileInfo);
+                        fileInfoHandler.write(fileInfo);
                     } catch (Exception e) {
                         LOGGER.error(e.getMessage(), e);
                     }
@@ -94,11 +106,12 @@ public class FileClientHandler extends ChannelHandlerAdapter {
     public void heartbeatStart(){
         LOGGER.info("心跳程序已启动 ....");
         final FileInfo fileInfo = new FileInfo();
+        fileInfo.setPackageType(PackageType.HEARBEAT);
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 try {
-                    FileInfoHandler.send(ctx,fileInfo);
+                    fileInfoHandler.send(ctx,fileInfo);
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage(),e);
                 }
@@ -115,7 +128,7 @@ public class FileClientHandler extends ChannelHandlerAdapter {
     public void upload(final String srcDir, final String dstDir, final String fileName) throws Exception {
         EXCUTORS.submit(new Callable<Boolean>() {
             public Boolean call() throws Exception {
-                FileInfoHandler.transfer(EXCUTORS,monitor,paramFetcher, ctx,srcDir,dstDir,fileName);
+                fileInfoHandler.transfer(EXCUTORS,monitor,paramFetcher, ctx,srcDir,dstDir,fileName);
                 return true;
             }
         });
