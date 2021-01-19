@@ -150,4 +150,13 @@ public class FileServerHanlder extends ChannelHandlerAdapter {
         }
 
     }
+
+    public Map<String,ChannelHandlerContext> getClinetInfos(){
+        return CLINET_INFOS;
+    }
+
+    public ChannelHandlerContext getClinetInfos(String remote){
+        return CLINET_INFOS.get(remote);
+    }
+
 }
