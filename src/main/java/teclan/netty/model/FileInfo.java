@@ -11,6 +11,7 @@ public class FileInfo {
     private String srcFileName="";//源文件路径
     private String dstFileName="";//目标文件路径
     private String tmpFileName="";//临时文件路径
+    private String router ="";// 目标客户端
     private String md5=""; // 原文件MD5
     private int index;//包索引，表名是第几个数据包
     private int slice; // 片大小
@@ -169,5 +170,13 @@ public class FileInfo {
 
     public void setPackageType(PackageType packageType) {
         this.packageType = packageType;
+    }
+
+    public String getRouter() {
+        return router;
+    }
+
+    public void setRouter(String router) {
+        this.router = router;
     }
 }

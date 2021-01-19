@@ -36,6 +36,16 @@ public class FileInfoEnCoder extends MessageToByteEncoder<FileInfo> {
         byteBuf.writeInt(data.length);
         byteBuf.writeBytes(data);
 
+        // 路由编码
+        data = StringUtils.getBytes(fileInfo.getRouter());
+        byteBuf.writeInt(data.length);
+        byteBuf.writeBytes(data);
+
+        // 文件摘要编码
+        data = StringUtils.getBytes(fileInfo.getMd5());
+        byteBuf.writeInt(data.length);
+        byteBuf.writeBytes(data);
+
         //分片大小编码
         byteBuf.writeInt(fileInfo.getSlice());
         // 文件长度编码

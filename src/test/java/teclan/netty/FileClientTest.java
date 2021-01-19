@@ -21,10 +21,7 @@ public class FileClientTest {
 
     @Test
     public void upload() throws Exception {
-
-        for(int i=0;i<2;i++){
-            send();
-        }
+        send();
         Thread.sleep(1000*60*20);
     }
 

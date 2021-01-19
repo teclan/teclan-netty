@@ -92,6 +92,7 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
                 fileInfo.setDefTmpFileName();
                 fileInfo.setMd5(FileUtils.getFileSummary(file,"MD5"));
                 fileInfo.setPackageType(PackageType.DATA);
+                fileInfo.setRouter(getRemote(ctx));
 
                 push(getRemote(ctx),fileInfo);
 

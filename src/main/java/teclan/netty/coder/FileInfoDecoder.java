@@ -68,6 +68,26 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
             byteBuf.readBytes(data);
             fileInfo.setTmpFileName(StringUtils.getString(data));
 
+            // 路由解码
+            length = byteBuf.readInt();
+            if (waitCache(length,byteBuf)) {
+                byteBuf.resetReaderIndex();
+                return;
+            }
+            data = new byte[length];
+            byteBuf.readBytes(data);
+            fileInfo.setRouter(StringUtils.getString(data));
+
+            // 摘要解码
+            length = byteBuf.readInt();
+            if (waitCache(length,byteBuf)) {
+                byteBuf.resetReaderIndex();
+                return;
+            }
+            data = new byte[length];
+            byteBuf.readBytes(data);
+            fileInfo.setMd5(StringUtils.getString(data));
+
             // 分片大小解码
             fileInfo.setSlice(byteBuf.readInt());
             // 文件长度解码
@@ -101,7 +121,7 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
             }
             list.add(fileInfo);
         } catch (Exception e) {
-            LOGGER.error("{}",fileInfo);
+            LOGGER.error("解析数据异常：{}",fileInfo);
             LOGGER.error(e.getMessage(), e);
         }
     }
