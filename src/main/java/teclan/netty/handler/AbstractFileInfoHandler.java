@@ -52,19 +52,18 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
         }
 
         if (CounterCache.isDone(fileInfo)) {
-            File dst = new File(fileInfo.getDstFileName());
-            try {
-                FileUtils.rename(tmp, dst);
-            } catch (Exception e) {
-                LOGGER.error(e.getMessage(), e);
-            }
             CounterCache.remove(fileInfo);
-            LOGGER.info("文件接收完成 {} ", dst.getAbsolutePath());
-            String md5 =FileUtils.getFileSummary(dst,"MD5");
+            String md5 =FileUtils.getFileSummary(tmp,"MD5");
             if(!fileInfo.getMd5().equals(md5)){
-                LOGGER.info("文件接收完成 {},但文件内容有丢失 ... ", dst.getAbsolutePath());
+                LOGGER.info("文件接收完成 {},但文件内容有丢失 ... ", tmp.getAbsolutePath());
                 writeFail(fileInfo);
             }else{
+                File dst = new File(fileInfo.getDstFileName());
+                try {
+                    FileUtils.rename(tmp, dst);
+                } catch (Exception e) {
+                    LOGGER.error(e.getMessage(), e);
+                }
                 LOGGER.info("文件接收完成 {} ", dst.getAbsolutePath());
                 writeDone(fileInfo);
             }
