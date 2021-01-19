@@ -17,4 +17,6 @@ public interface FileInfoHandler {
 
     public void writeFail(FileInfo fileInfo) throws Exception;
 
+    public void writeDone(FileInfo fileInfo) throws Exception;
+
 }

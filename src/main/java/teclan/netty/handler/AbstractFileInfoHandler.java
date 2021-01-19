@@ -29,6 +29,7 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
             new File(fileInfo.getDstFileName()).mkdirs();
             CounterCache.remove(fileInfo);
             LOGGER.info("文件接收完成 {}", fileInfo.getDstFileName());
+            writeDone(fileInfo);
             return;
         }
 
@@ -65,6 +66,7 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
                 writeFail(fileInfo);
             }else{
                 LOGGER.info("文件接收完成 {} ", dst.getAbsolutePath());
+                writeDone(fileInfo);
             }
             return;
         }
@@ -154,6 +156,10 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
 
     public void writeFail(FileInfo fileInfo) throws Exception {
         LOGGER.info("接收文件失败,{}",fileInfo);
+    }
+
+    public void writeDone(FileInfo fileInfo) throws Exception{
+        LOGGER.info("接收文件成功,{}",fileInfo);
     }
 
     private String getRemote(ChannelHandlerContext ctx){

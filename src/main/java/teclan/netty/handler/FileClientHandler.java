@@ -9,6 +9,7 @@ import teclan.netty.cache.FileInfoCache;
 import teclan.netty.model.FileInfo;
 import teclan.netty.model.PackageType;
 
+import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Callable;
@@ -64,7 +65,10 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                 CounterCache.increase(fileInfo);
                 FileInfoCache.put(fileInfo);
             }else if(PackageType.CMD_NEED_REPEAT.compareTo(fileInfo.getPackageType())==0){// 客户端请求重复推送文件,当文件解析异常时发送
-                // TODO
+                String srcDir = new File(fileInfo.getSrcFileName()).getParent();
+                String dstDir = new File(fileInfo.getDstFileName()).getParent();
+                String fileName = new File(fileInfo.getSrcFileName()).getName();
+                fileInfoHandler.transfer(EXCUTORS,monitor,paramFetcher, ctx,srcDir,dstDir,fileName);
             }else {
                 LOGGER.info("收到未知的数据包类型,{}",fileInfo);
             }
