@@ -123,6 +123,7 @@ public class FileInfoDecoder extends ByteToMessageDecoder {
         } catch (Exception e) {
             LOGGER.error("解析数据异常：{}",fileInfo);
             LOGGER.error(e.getMessage(), e);
+            byteBuf.resetReaderIndex();
         }
     }
 
