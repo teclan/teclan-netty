@@ -93,7 +93,7 @@ public class FileClientHandler extends ChannelHandlerAdapter {
                 while (true) {
                     try {
                         final FileInfo fileInfo = FileInfoCache.take();
-                        fileInfoHandler.write(fileInfo);
+                        fileInfoHandler.write(monitor,fileInfo);
                     } catch (Exception e) {
                         LOGGER.error(e.getMessage(), e);
                     }
