@@ -102,7 +102,7 @@ public class FileServerHanlder extends ChannelHandlerAdapter {
                        EXCUTORS.submit(new Callable<Boolean>() {
 
                            public Boolean call() throws Exception {
-                               fileInfoHandler.write(fileInfo);
+                               fileInfoHandler.write(monitor,fileInfo);
                                return true;
                            }
                        });

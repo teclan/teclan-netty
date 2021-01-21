@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 
 public interface FileInfoHandler {
 
-    public void write(FileInfo fileInfo) throws Exception;
+    public void write(Monitor monitor,FileInfo fileInfo) throws Exception;
 
     public void transfer(final ExecutorService EXCUTORS, final Monitor monitor, final ParamFetcher paramFetcher, final ChannelHandlerContext ctx, final String srcDir, final String dstDir, final String fileName) throws Exception ;
 

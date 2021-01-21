@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 public abstract class AbstractFileInfoHandler implements FileInfoHandler{
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFileInfoHandler.class);
 
-    public void write(FileInfo fileInfo) throws Exception {
+    public void write(Monitor monitor,FileInfo fileInfo) throws Exception {
 
         if (!CounterCache.hasCache(fileInfo)) {
             FileInfoCache.put(fileInfo);
@@ -30,6 +30,7 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
             CounterCache.remove(fileInfo);
             LOGGER.info("文件接收完成 {}", fileInfo.getDstFileName());
             writeDone(fileInfo);
+            monitor.setReceProcess(fileInfo.getDstFileName(), 100, 100);
             return;
         }
 
@@ -48,7 +49,10 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
             } finally {
                 randomAccessFile.close();
             }
+        }
 
+        if (fileInfo.getIndex() % 100 == 0) {
+            monitor.setReceProcess(fileInfo.getDstFileName(), fileInfo.getPackages(), fileInfo.getIndex());
         }
 
         if (CounterCache.isDone(fileInfo)) {
@@ -65,6 +69,7 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
                     LOGGER.error(e.getMessage(), e);
                 }
                 LOGGER.info("文件接收完成 {} ", dst.getAbsolutePath());
+                monitor.setReceProcess(fileInfo.getDstFileName(), 100, 100);
                 writeDone(fileInfo);
             }
             return;
@@ -100,7 +105,7 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
                 if (file.isDirectory()) {
                     fileInfo.setDir(true);
                     send(ctx, fileInfo);
-                    monitor.serProcess(file.getAbsolutePath(), 100, 100);
+                    monitor.setPushProcess(file.getAbsolutePath(), 100, 100);
                 } else {
                     BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file.getAbsolutePath()));
                     int slice = paramFetcher.get().getInteger("slice");
@@ -131,14 +136,14 @@ public abstract class AbstractFileInfoHandler implements FileInfoHandler{
                             fileInfo.setPoint(fileInfo.getPoint() + cacheLength);
                             send(ctx, fileInfo);
                             if (index % 100 == 0) {
-                                monitor.serProcess(file.getAbsolutePath(), fileInfo.getPackages(), fileInfo.getIndex());
+                                monitor.setPushProcess(file.getAbsolutePath(), fileInfo.getPackages(), fileInfo.getIndex());
                             }
 
                             start += cacheLength;
                             Thread.sleep(10);
                         }
                     } while (cacheLength > 0);
-                    monitor.serProcess(file.getAbsolutePath(), 100, 100);
+                    monitor.setPushProcess(file.getAbsolutePath(), 100, 100);
                     LOGGER.info("文件传输完成：{}", file.getAbsolutePath());
                 }
                 return true;
