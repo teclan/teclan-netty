@@ -6,7 +6,10 @@ import teclan.netty.config.Config;
 public class DefaultParamFetcher implements ParamFetcher {
     public JSONObject get() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("slice", Config.SLICE);
+
+        int size = FileServerHanlder.getClinetInfos().size();
+        size = size == 0 ? 1 : size;
+        jsonObject.put("slice", Config.SLICE / size);
         return jsonObject;
     }
 }
